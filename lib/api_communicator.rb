@@ -16,24 +16,21 @@ require 'pry'
 def get_character_movies_from_api(character)
   #make the web request
   link = "http://www.swapi.co/api/people/"
-  all_characters = RestClient.get(link)
-  character_hash = JSON.parse(all_characters)
+  character_hash = parse_json(link)
   link = character_hash["next"]
 
   while link != nil
-    adding_characters = RestClient.get(link)
-    add_character_hash = JSON.parse(adding_characters)
-    character_hash["results"] = character_hash["results"].replace(add_character_hash["results"])
+    character_hash["results"] = character_hash["results"].replace(parse_json(link)["results"])
     break if check_for_character(character_hash["results"], character)
-    link = add_character_hash["next"]
+    link = parse_json(link)["next"]
   end
 
-  char = character_hash["results"].each_with_object({}) do |entry, hash|
-    if character == entry["name"].downcase
-  #    puts entry["name"]
-       hash.merge!(entry)
-    end
-  end
+  char = get_character_info(character_hash, character)
+
+end
+
+def get_character_info(character_hash, character)
+  character_hash["results"].find {|entry| character == entry["name"].downcase}
 end
 
 def check_for_character(array, character)
@@ -43,9 +40,12 @@ def check_for_character(array, character)
 end
 
 def get_movies_from_api(movie)
-  this_movie = RestClient.get(movie)
-  this_movie = JSON.parse(this_movie)
-  this_movie["title"]
+  parse_json(movie)["title"]
+end
+
+def parse_json(link)
+  a = RestClient.get(link)
+  JSON.parse(a)
 end
 
 def parse_character_movies(films_hash)
