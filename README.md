@@ -132,7 +132,7 @@ Why separate our program in this way? It's just more organized to separate our c
 
 First, we call the `welcome` method (which you will define in another file), then we call the `get_character_from_user` method, saving its return value to a variable, `character`. Lastly, we invoke the `show_character_movies` method, giving it an argument of the character name we captured above.
 
-Let's takea look at how and where you will define those methods!
+Let's take a look at how and where you will define those methods!
 
 ### `lib/api_communicator.rb`
 
