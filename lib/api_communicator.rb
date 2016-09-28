@@ -23,11 +23,10 @@ def get_character_movies_from_api(character)
   while link != nil
     adding_characters = RestClient.get(link)
     add_character_hash = JSON.parse(adding_characters)
-    character_hash["results"].concat add_character_hash["results"]
+    character_hash["results"] = character_hash["results"].replace(add_character_hash["results"])
+    break if check_for_character(character_hash["results"], character)
     link = add_character_hash["next"]
   end
-
-  puts link
 
   char = character_hash["results"].each_with_object({}) do |entry, hash|
     if character == entry["name"].downcase
@@ -35,6 +34,12 @@ def get_character_movies_from_api(character)
        hash.merge!(entry)
     end
   end
+end
+
+def check_for_character(array, character)
+  if array.find {|q_char|
+    q_char["name"].downcase == character} then true
+  else false end
 end
 
 def get_movies_from_api(movie)
@@ -52,6 +57,7 @@ def parse_character_movies(films_hash)
 end
 
 def show_character_movies(character)
+  puts "#{character.split.map(&:capitalize).join(' ')} was in: \n"
   films_hash = get_character_movies_from_api(character)
   parse_character_movies(films_hash)
 end
